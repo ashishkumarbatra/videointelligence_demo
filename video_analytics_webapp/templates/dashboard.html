@@ -1,0 +1,101 @@
+<html>
+    <head>
+        <title>  Video Intelligence Demo </title>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css">
+        <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+        <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+        <script src="https://cdn.rawgit.com/google/code-prettify/master/loader/run_prettify.js"></script>
+
+        <style>
+            .video{
+                width: 500px;
+                margin-left: auto;
+                margin-right: auto;
+            }
+        </style>
+        <script>
+            function process_video(){
+                $("#loading").show();
+                $.ajax({
+                    type: 'POST',
+                    url: '/',
+                    data: {'query': $("#query").val()},
+                    success: function(data, status, xhr){
+                        console.warn(data);
+                        $("#loading").hide();
+                        $("#video_analytics").text(jsonify(data['video_analytics']));
+                        $("#speech_analtycis").text(jsonify(data['speech_analytics']));
+                        $("#vision_analytics").text(jsonify(data['vision_analytics']));
+                        $("#search_analytics").text(jsonify(data['search_data']));
+                        $("#nlp_analytics").text(jsonify(data['nlp_analytics']));
+
+                        var speech = data['speech_analytics'];
+                        speech_url = speech['audio_url'];
+                        $('#audio_url').attr('href', speech_url);
+
+
+                    },
+                    error: function(){
+                        alert('Error');
+                        $("#loading").hide();
+                    }
+                });
+            }
+
+            function jsonify(data){
+                return JSON.stringify(data, null, 4)
+            }
+
+            $(document).ready(function(){
+                $("#loading").hide();
+            });
+        </script>
+    </head>
+    <body>
+        <div class="video">
+            <h2> Video Intelligence Demo </h2>
+            <video width="520" height="340" controls>
+                <source src="{{MEDIA_URL}}{{video_path}}" type="video/mp4">
+
+              Your browser does not support the video tag.
+            </video>
+            Query: <input class="form-control" type="text" id="query"/>
+
+            <button type="button" class="btn btn-primary" onclick="process_video()">Process</button>
+            <div id="loading">
+                <img src="https://cdn-images-1.medium.com/max/1600/1*W8cj-FRc58UozzcMWqVPZw.gif"/>
+            </div>
+
+        </div>
+
+
+        <h4>Video Analytics Data</h4>
+        <pre class="video_analytics prettyprint" id="video_analytics">
+
+        </pre>
+
+        <h4>Speech Analytics Data</h4>
+        <a href="#" target="_blank" id="audio_url">Download Speech Text</a>
+        <pre class="speech_analtycis prettyprint" id="speech_analtycis">
+
+        </pre>
+
+
+        <h4>Vision Analytics Data</h4>
+        <pre class="vision_analytics prettyprint" id="vision_analytics">
+
+        </pre>
+
+        <h4>Video Search Data</h4>
+        <pre class="search_analytics prettyprint" id="search_analytics">
+
+        </pre>
+
+        <h4>NLP Analytics</h4>
+        <pre class="nlp_analytics prettyprint" id="nlp_analytics">
+
+        </pre>
+
+    </body>
+</html>

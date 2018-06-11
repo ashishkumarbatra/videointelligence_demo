@@ -1,0 +1,7 @@
+data/
+tmp/
+venv/
+.idea/
+keys/
+src/__pycache__/
+*.pyc
