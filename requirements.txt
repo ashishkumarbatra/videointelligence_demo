@@ -2,7 +2,7 @@ cachetools==2.1.0
 certifi==2018.4.16
 chardet==3.0.4
 dill==0.2.7.1
-Django==2.0.5
+Django
 future==0.16.0
 gapic-google-cloud-datastore-v1==0.15.3
 gapic-google-cloud-error-reporting-v1beta1==0.15.3
