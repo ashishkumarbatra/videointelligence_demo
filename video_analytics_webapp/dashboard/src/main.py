@@ -5,12 +5,21 @@ import datetime
 import os
 from pprint import pprint
 
-from .nlp_analytics import NLPAnalytics
-from .video_intellegence import ParseVideo
-from .video_search import VideoSearch
-from .video_to_text import VideoToText
-from .vision_analytics import VisionAnalytics
-from .config import video_name, local_video_folder, video_frames_folder, local_tmp_folder, clean_folders
+# RUn Directly
+from nlp_analytics import NLPAnalytics
+from video_intellegence import ParseVideo
+from video_search import VideoSearch
+from video_to_text import VideoToText
+from vision_analytics import VisionAnalytics
+from config import video_name, local_video_folder, video_frames_folder, local_tmp_folder, clean_folders
+from fileutil import FileUtil
+
+# from .nlp_analytics import NLPAnalytics
+# from .video_intellegence import ParseVideo
+# from .video_search import VideoSearch
+# from .video_to_text import VideoToText
+# from .vision_analytics import VisionAnalytics
+# from .config import video_name, local_video_folder, video_frames_folder, local_tmp_folder, clean_folders
 
 
 class VideoIntelligenceRunner(object):
@@ -20,7 +29,7 @@ class VideoIntelligenceRunner(object):
     def main(self, query=''):
         # return fixture_data
 
-        clean_folders()
+        #clean_folders()
         print("Starting Video Processing", datetime.datetime.now())
         video_parse = ParseVideo(video_name)
         process_video_data = video_parse.run()
@@ -31,14 +40,14 @@ class VideoIntelligenceRunner(object):
         self.data['vision_analytics'] = []
 
         for image in process_video_data['frame_images']:
-            image_path = os.path.join(local_tmp_folder, video_frames_folder, image)
+            image_path = FileUtil.join(video_frames_folder, image)
             vanalytics = VisionAnalytics(image_path)
             vision_data = vanalytics.run()
             print("Statring vision analytics on ")
             self.data['vision_analytics'].append(vision_data)
 
         print("Starting Speech Analytics")
-        video_abs_path = os.path.join(local_video_folder, video_name)
+        video_abs_path = video_name
         vtext = VideoToText(video_abs_path)
         vspeechdata = vtext.run()
         self.data['speech_analytics'] = vspeechdata

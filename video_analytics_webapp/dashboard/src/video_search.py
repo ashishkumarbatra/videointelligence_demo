@@ -4,10 +4,16 @@ For demo take english video
 import os
 from collections import defaultdict
 
-from .config import video_name, local_video_folder
-from .video_to_text import VideoToText
+from fileutil import FileUtil
+from config import video_name, local_video_folder
+from video_to_text import VideoToText
 
-video_full_path = os.path.join(local_video_folder, video_name)
+
+# from .fileutil import FileUtil
+# from .config import video_name, local_video_folder
+# from .video_to_text import VideoToText
+
+video_full_path = FileUtil.join(local_video_folder, video_name)
 
 
 class VideoSearch(object):

@@ -2,14 +2,18 @@
 Pass in an image and get all details of that image
 """
 from collections import defaultdict
-import os, sys
+import os, sys,io
 import datetime
 from google.cloud import vision
 from google.cloud import storage
+from fileutil import FileUtil
+
 
 from PIL import Image
 
-from .config import gcs_bucket, local_video_folder, local_tmp_folder, image_crops_frames
+from config import gcs_bucket, local_video_folder, local_tmp_folder, image_crops_frames,video_frames_folder
+#from .config import gcs_bucket, local_video_folder, local_tmp_folder, image_crops_frames
+from video_analytics_webapp.dashboard.src.config import gcs_bucket_url
 
 
 class VisionAnalytics(object):
@@ -27,8 +31,14 @@ class VisionAnalytics(object):
         print("End image to Storage")
 
     def create_vision_image(self, image_path):
-        with open(image_path, 'rb') as image_obj:
-            image_content = image_obj.read()
+        #with gcs.open('/videointelligence_demo/local/tmp/video_frames/0.463471.jpg', 'rb') as image_obj:
+        storage_client = storage.Client()
+        bucket = storage_client.get_bucket(gcs_bucket)
+        blob = bucket.blob(image_path)
+        # use blob no need to read the file
+        image_content = blob.download_as_string()
+        # with open(image_path, 'rb') as image_obj:
+        #     image_content = image_obj.read()
         vision_image = vision.types.Image(content=image_content)
 
         # vision_image = vision.types.Image()
@@ -39,7 +49,7 @@ class VisionAnalytics(object):
     def annotate(self):
 
         image_analytics = []
-        vision_image = self.create_vision_image(self.image)
+        vision_image = self.create_vision_image(FileUtil.join(video_frames_folder,self.image_name))
 
         labels = self.detect_labels(vision_image)
         web_result = self.detect_web(vision_image)
@@ -172,15 +182,30 @@ class VisionAnalytics(object):
         return vertices
 
     def _crop_to_hint(self, vects):
+        storage_client = storage.Client()
+        bucket = storage_client.get_bucket(gcs_bucket)
 
-        im = Image.open(self.image)
+
+
+        ### Hardcoded fix here
+
+
+        vide_frames_blob = bucket.blob('video_frames/0.463471.jpg')
+        bytesRead = vide_frames_blob.download_as_string()
+        im = Image.open(io.BytesIO(bytesRead))
         im2 = im.crop([vects[0].x, vects[0].y,
                        vects[2].x - 1, vects[2].y - 1])
-        output_image = os.path.join(local_tmp_folder,
-                                    image_crops_frames,
-                                    'Image.png').replace(" ", '_')
 
-        im2.save(output_image)
+        #https://stackoverflow.com/questions/33101935/convert-pil-image-to-byte-array/33117447#33117447
+        imgByteArr = io.BytesIO()
+        im2.save(imgByteArr, format='JPEG')
+        imgByteArr = imgByteArr.getvalue()
+
+        output_image = FileUtil.join(image_crops_frames,self.image_name)
+        cropped_blob = bucket.blob(output_image)
+        cropped_blob.upload_from_string(imgByteArr)
+
+        # im2.save(output_image)
         return output_image
 
     def run(self, **kwargs):
@@ -191,8 +216,9 @@ class VisionAnalytics(object):
 
 if __name__ == '__main__':
     # image = os.path.join(local_video_folder, 'download.jpeg')
-    image = os.path.join(local_video_folder, 'modi_screenshot.png')
+    image = FileUtil.join('gs://'+gcs_bucket+'/video_frames', '0.463471.jpg')
     ana = VisionAnalytics(image)
+    ana.annotate()
     ana.run()
 
 

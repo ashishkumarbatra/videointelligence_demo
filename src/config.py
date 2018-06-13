@@ -38,4 +38,4 @@ def clean_folders():
                 os.unlink(file_path)
                 print("Deleted", file_path)
 
-clean_folders()
+#clean_folders()

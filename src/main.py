@@ -20,7 +20,7 @@ class VideoIntelligenceRunner(object):
     def main(self, query=''):
         # return fixture_data
 
-        clean_folders()
+        #clean_folders()
         print("Starting Video Processing", datetime.datetime.now())
         video_parse = ParseVideo(video_name)
         process_video_data = video_parse.run()

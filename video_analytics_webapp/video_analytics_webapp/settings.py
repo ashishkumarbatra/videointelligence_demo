@@ -11,9 +11,13 @@ https://docs.djangoproject.com/en/2.0/ref/settings/
 """
 
 import os
+from dashboard.src.config import gcs_bucket_url
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+# Build paths inside the project like this: FileUtil.join(BASE_DIR, ...)
+from dashboard.src.fileutil import FileUtil
+
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 #FILES_DIR = "C:\\Users\\Ashish\\PycharmProjects\\VideoAnalytics"
 
 # Quick-start development settings - unsuitable for production
@@ -55,7 +59,7 @@ ROOT_URLCONF = 'video_analytics_webapp.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'templates')],
+        'DIRS': [FileUtil.join(BASE_DIR, 'templates')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -78,7 +82,7 @@ WSGI_APPLICATION = 'video_analytics_webapp.wsgi.application'
 # DATABASES = {
 #     'default': {
 #         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+#         'NAME': FileUtil.join(BASE_DIR, 'db.sqlite3'),
 #     }
 # }
 
@@ -120,11 +124,13 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static_files')
+STATIC_ROOT = FileUtil.join(BASE_DIR, 'static_files')
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static')
+    FileUtil.join(BASE_DIR, 'static'),
+    gcs_bucket_url+'/local/data'
 ]
 
-MEDIA_URL = '/data/'
-MEDIA_ROOT = 'C:/Users/Ashish/PycharmProjects/VideoAnalytics/'
+MEDIA_URL = gcs_bucket_url+ '/local/data/'
+MEDIA_ROOT = gcs_bucket_url
+
 

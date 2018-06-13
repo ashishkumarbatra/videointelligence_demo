@@ -5,14 +5,16 @@ from django.views.generic import View
 from django.conf import settings
 
 from .src.main import VideoIntelligenceRunner
-from .src.config import video_name
+from .src.config import video_name,gcs_bucket_url
 
 
 class DashboardView(View):
     template_name = 'dashboard.html'
 
     def get(self, request, *args, **kwargs):
-        context = {'video_path': 'data/' + video_name}
+        #changing to check
+        context = {'video_path': video_name}
+        #context = {'video_path': 'data/' + video_name}
         return render(request, self.template_name, context=context)
 
     def post(self, request, *args, **kwargs):
