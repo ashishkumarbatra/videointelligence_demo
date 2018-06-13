@@ -9,11 +9,11 @@ from google.cloud import speech
 from google.cloud.speech import enums
 from google.cloud.speech import types
 
-from fileutil import FileUtil
-
-from config import gcs_bucket, video_name, local_video_folder, video_encoding, local_tmp_folder, audio_folder, image_crops_frames
-#from .config import gcs_bucket, video_name, local_video_folder, video_encoding, local_tmp_folder, audio_folder, image_crops_frames
-
+# from fileutil import FileUtil
+#
+# from config import gcs_bucket, video_name, local_video_folder, video_encoding, local_tmp_folder, audio_folder, image_crops_frames
+from .config import gcs_bucket, video_name, local_video_folder, video_encoding, local_tmp_folder, audio_folder, image_crops_frames
+# from .fileutil import FileUtil
 
 class VideoToText(object):
     """
@@ -22,7 +22,7 @@ class VideoToText(object):
     def __init__(self, video_url):
         self.video_url = video_url
         self.audio_file_name = None
-        self.audio_tmp_dir = FileUtil.join(local_tmp_folder, audio_folder)
+        self.audio_tmp_dir = os.path.join(local_tmp_folder, audio_folder)
         self.duration = None
         self.get_file_size()
 
@@ -194,7 +194,7 @@ class VideoToText(object):
         audio_url = self.upload_to_storage(**kwargs)
         speech_data = self.extract_text(**kwargs)
         speech_data['audio_url'] = audio_url
-        speech_data['audio_tmp_url'] = FileUtil.join('temp', self.audio_file_name)
+        speech_data['audio_tmp_url'] = os.path.join('temp', self.audio_file_name)
         return speech_data
 
 

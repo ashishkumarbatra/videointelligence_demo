@@ -6,14 +6,15 @@ import os, sys,io
 import datetime
 from google.cloud import vision
 from google.cloud import storage
-from fileutil import FileUtil
+
 
 
 from PIL import Image
+# from fileutil import FileUtil
+# from config import gcs_bucket, local_video_folder, local_tmp_folder, image_crops_frames,video_frames_folder,gcs_bucket_url
+from .config import gcs_bucket, local_video_folder, local_tmp_folder, image_crops_frames,gcs_bucket_url,video_frames_folder
+# from .fileutil import FileUtil
 
-from config import gcs_bucket, local_video_folder, local_tmp_folder, image_crops_frames,video_frames_folder
-#from .config import gcs_bucket, local_video_folder, local_tmp_folder, image_crops_frames
-from video_analytics_webapp.dashboard.src.config import gcs_bucket_url
 
 
 class VisionAnalytics(object):
@@ -49,7 +50,7 @@ class VisionAnalytics(object):
     def annotate(self):
 
         image_analytics = []
-        vision_image = self.create_vision_image(FileUtil.join(video_frames_folder,self.image_name))
+        vision_image = self.create_vision_image(os.path.join(video_frames_folder+"/"+self.image_name))
 
         labels = self.detect_labels(vision_image)
         web_result = self.detect_web(vision_image)
@@ -201,7 +202,7 @@ class VisionAnalytics(object):
         im2.save(imgByteArr, format='JPEG')
         imgByteArr = imgByteArr.getvalue()
 
-        output_image = FileUtil.join(image_crops_frames,self.image_name)
+        output_image = os.path.join(image_crops_frames,self.image_name)
         cropped_blob = bucket.blob(output_image)
         cropped_blob.upload_from_string(imgByteArr)
 
@@ -216,7 +217,7 @@ class VisionAnalytics(object):
 
 if __name__ == '__main__':
     # image = os.path.join(local_video_folder, 'download.jpeg')
-    image = FileUtil.join('gs://'+gcs_bucket+'/video_frames', '0.463471.jpg')
+    image = os.path.join('gs://'+gcs_bucket+'/video_frames/'+ '0.463471.jpg')
     ana = VisionAnalytics(image)
     ana.annotate()
     ana.run()

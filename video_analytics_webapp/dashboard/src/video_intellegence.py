@@ -3,11 +3,12 @@ import datetime
 from google.cloud import videointelligence
 from google.cloud import storage
 import json
+import time
 
-from config import gcs_bucket, video_name, local_video_folder, video_frames_folder, local_tmp_folder, video_frames_json
-from fileutil import FileUtil
+#from config import gcs_bucket, video_name, local_video_folder, video_frames_folder, local_tmp_folder, video_frames_json
+# from fileutil import FileUtil
 
-# from .config import gcs_bucket, video_name, local_video_folder, video_frames_folder, local_tmp_folder, video_frames_json
+from .config import gcs_bucket, video_name, local_video_folder, video_frames_folder, local_tmp_folder, video_frames_json
 # from .fileutil import FileUtil
 
 enum_features = videointelligence.enums.Feature
@@ -26,7 +27,7 @@ class ParseVideo(object):
         config = videointelligence.types.LabelDetectionConfig(label_detection_mode=mode)
 
         context = videointelligence.types.VideoContext(label_detection_config=config)
-
+        #remove hardcoding
         video_path = 'gs://' + gcs_bucket + '/' + self.video
         operation = video_client.annotate_video(input_uri=video_path, features=features, video_context=context)
 
@@ -58,15 +59,43 @@ class ParseVideo(object):
         :param timestamps:
         :return:
         """
-        video_input = FileUtil.join(local_video_folder, self.video)
+        # Django changes
+        # video_input = os.path.join(local_video_folder, self.video)
+        # video_input = os.path.join(self.video)
 
+        s_client = storage.Client()
+        s_bucket = s_client.bucket(gcs_bucket)
+        blob = s_bucket.blob(self.video)
+
+        # store the file temporarily for processing
+        video_input = os.path.join(local_video_folder, self.video)
+        directory = os.path.dirname(video_input)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+        # write code to clean directory if exists
+
+        blob.download_to_filename(video_input)
+        #hardcoding time to sleep for download
+        time.sleep(20)
+
+        video_frames_path = os.path.join(local_tmp_folder,video_frames_folder)
+        if not os.path.exists(video_frames_path):
+            os.makedirs(video_frames_path)
         screenshot_files = []
         for _ftime in timestamps:
             try:
                 # name_output = FileUtil.join(local_tmp_folder, video_frames_folder, str(_ftime)+ '.jpg')
-                name_output = FileUtil.join(local_tmp_folder, video_frames_folder, str(_ftime) + '.jpg')
+                name_output = os.path.join(local_tmp_folder, video_frames_folder, str(_ftime) + '.jpg')
                 screenshot_files.append(name_output)
                 print("Creating screenshot", name_output)
+                # remove pre-existing files
+                try:
+                    if os.path.isfile(name_output):
+                        os.unlink(name_output)
+                    # elif os.path.isdir(file_path): shutil.rmtree(file_path)
+                except Exception as e:
+                    print(e)
+
                 os.system("ffmpeg -i " + video_input + " -ss " + str(_ftime) + " -frames:v 1 " + name_output)
             except ValueError:
                 return ("Oops! error when creating screenshot")
@@ -79,19 +108,32 @@ class ParseVideo(object):
         screenshot_files = self.capture_frames(processed_data['person'])
         processed_data['frame_images'] = [os.path.split(image)[-1] for image in screenshot_files]
         #not required everything on cloud
-        #self.upload_to_gcs(processed_data)
-        #self.upload_image(screenshot_files)
+        self.upload_to_gcs(processed_data)
+        self.upload_image(screenshot_files)
         return processed_data
 
     def upload_to_gcs(self, data):
         json_data = json.dumps(data)
         _tstamp = str(datetime.datetime.now()).replace(' ', '_')
-        base_target_path = FileUtil.join(local_tmp_folder, video_frames_json)
+        base_target_path = os.path.join(local_tmp_folder, video_frames_json)
         # if not os.path.exists(base_target_path):
         #     os.makedirs(base_target_path)
 
         target_file = 'person_video_intelligence.json'
-        target_file_path = FileUtil.join(base_target_path, target_file)
+        target_file_path = os.path.join(base_target_path, target_file)
+
+        # remove pre-existing files
+        try:
+            if os.path.isfile(target_file_path):
+                os.unlink(target_file_path)
+            # elif os.path.isdir(file_path): shutil.rmtree(file_path)
+        except Exception as e:
+            print(e)
+
+        directory = os.path.dirname(target_file_path)
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
 
         with open(target_file_path, 'w') as json_file:
             print("Saving Video Intelligence data to ", target_file_path)

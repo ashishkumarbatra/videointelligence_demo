@@ -6,20 +6,20 @@ import os
 from pprint import pprint
 
 # RUn Directly
-from nlp_analytics import NLPAnalytics
-from video_intellegence import ParseVideo
-from video_search import VideoSearch
-from video_to_text import VideoToText
-from vision_analytics import VisionAnalytics
-from config import video_name, local_video_folder, video_frames_folder, local_tmp_folder, clean_folders
-from fileutil import FileUtil
+# from nlp_analytics import NLPAnalytics
+# from video_intellegence import ParseVideo
+# from video_search import VideoSearch
+# from video_to_text import VideoToText
+# from vision_analytics import VisionAnalytics
+# from config import video_name, local_video_folder, video_frames_folder, local_tmp_folder, clean_folders
+# from fileutil import FileUtil
 
-# from .nlp_analytics import NLPAnalytics
-# from .video_intellegence import ParseVideo
-# from .video_search import VideoSearch
-# from .video_to_text import VideoToText
-# from .vision_analytics import VisionAnalytics
-# from .config import video_name, local_video_folder, video_frames_folder, local_tmp_folder, clean_folders
+from .nlp_analytics import NLPAnalytics
+from .video_intellegence import ParseVideo
+from .video_search import VideoSearch
+from .video_to_text import VideoToText
+from .vision_analytics import VisionAnalytics
+from .config import video_name, local_video_folder, video_frames_folder, local_tmp_folder, clean_folders
 
 
 class VideoIntelligenceRunner(object):
@@ -40,7 +40,7 @@ class VideoIntelligenceRunner(object):
         self.data['vision_analytics'] = []
 
         for image in process_video_data['frame_images']:
-            image_path = FileUtil.join(video_frames_folder, image)
+            image_path = os.path.join(video_frames_folder, image)
             vanalytics = VisionAnalytics(image_path)
             vision_data = vanalytics.run()
             print("Statring vision analytics on ")
