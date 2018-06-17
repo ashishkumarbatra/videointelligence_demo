@@ -2,6 +2,8 @@ venv/
 temp/
 tmp/
 data/
+video_analytics_webapp/data/
+video_analytics_webapp/temp/
 .idea/
 keys/
 src/__pycache__/
