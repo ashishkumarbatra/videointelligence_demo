@@ -202,7 +202,7 @@ class VisionAnalytics(object):
         im2.save(imgByteArr, format='JPEG')
         imgByteArr = imgByteArr.getvalue()
 
-        output_image = os.path.join(image_crops_frames,self.image_name)
+        output_image = os.path.join(image_crops_frames+"/"+self.image_name)
         cropped_blob = bucket.blob(output_image)
         cropped_blob.upload_from_string(imgByteArr)
 
@@ -212,7 +212,7 @@ class VisionAnalytics(object):
     def run(self, **kwargs):
         # self.upload_image_to_gcs()
         analytics_data = self.annotate()
-        return {'vision_analytics': analytics_data}
+        return {self.image_name: analytics_data}
 
 
 if __name__ == '__main__':

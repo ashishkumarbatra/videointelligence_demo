@@ -127,10 +127,14 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_files')
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),
-    gcs_bucket_url+'/local/data'
+    gcs_bucket_url+'/local/data',
+gcs_bucket_url+'/icon_img',
 ]
 
 MEDIA_URL = gcs_bucket_url+ '/local/data/'
 MEDIA_ROOT = gcs_bucket_url
-
+FRAME_IMAGES_ICON = '/icon_img/frame_images.png'
+IC_LABEL_ICON = '/icon_img/ic_label.png'
+IC_TIME_ICON = '/icon_img/ic_time.png'
+VA_DATA_ICON = '/icon_img/video_analytics_data.png'
 

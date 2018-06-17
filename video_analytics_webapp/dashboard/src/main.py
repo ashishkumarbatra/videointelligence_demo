@@ -12,7 +12,7 @@ from pprint import pprint
 # from video_to_text import VideoToText
 # from vision_analytics import VisionAnalytics
 # from config import video_name, local_video_folder, video_frames_folder, local_tmp_folder, clean_folders
-# from fileutil import FileUtil
+
 
 from .nlp_analytics import NLPAnalytics
 from .video_intellegence import ParseVideo
@@ -37,14 +37,14 @@ class VideoIntelligenceRunner(object):
 
         self.data['video_analytics'] = process_video_data
         print(self.data)
-        self.data['vision_analytics'] = []
+        self.data['vision_analytics'] = {}
 
         for image in process_video_data['frame_images']:
             image_path = os.path.join(video_frames_folder, image)
             vanalytics = VisionAnalytics(image_path)
             vision_data = vanalytics.run()
             print("Statring vision analytics on ")
-            self.data['vision_analytics'].append(vision_data)
+            self.data['vision_analytics'][image]= vision_data;
 
         print("Starting Speech Analytics")
         video_abs_path = video_name
@@ -63,10 +63,15 @@ class VideoIntelligenceRunner(object):
 
         words = self.data['speech_analytics']['words']
 
-        self.search(video_abs_path, words, query)
+        self.search(video_abs_path, words,query)
+        # self.search(video_abs_path, words, "trump")
 
         self.data = dict(self.data)
         pprint(self.data)
+
+        import json
+        with open('data.txt', 'w') as outfile:
+            json.dump(self.data, outfile)
         return self.data
 
     def search(self, video_abs_path, words, query):

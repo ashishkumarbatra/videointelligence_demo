@@ -5,7 +5,7 @@ from google.cloud import storage
 import json
 import time
 
-#from config import gcs_bucket, video_name, local_video_folder, video_frames_folder, local_tmp_folder, video_frames_json
+# from config import gcs_bucket, video_name, local_video_folder, video_frames_folder, local_tmp_folder, video_frames_json
 # from fileutil import FileUtil
 
 from .config import gcs_bucket, video_name, local_video_folder, video_frames_folder, local_tmp_folder, video_frames_json
@@ -103,13 +103,16 @@ class ParseVideo(object):
 
     def run(self):
         processed_data = self.process()
+        #processed data is annotated data
+        print("processed_data")
         print(processed_data)
         # processed_data = {'person': [0.661993, 1.787127, 3.6564870000000003, 5.680453]}#, 7.617809, 8.698539, 30.621787, 79.793596, 96.352172, 97.47503, 99.758555, 101.866913, 369.632425, 709.352819, 829.4914220000001, 876.436231, 1509.513032]}
         screenshot_files = self.capture_frames(processed_data['person'])
         processed_data['frame_images'] = [os.path.split(image)[-1] for image in screenshot_files]
         #not required everything on cloud
         self.upload_to_gcs(processed_data)
-        self.upload_image(screenshot_files)
+        framesPublicUurlDict =self.upload_image(screenshot_files)
+        processed_data['publicUrls'] = framesPublicUurlDict
         return processed_data
 
     def upload_to_gcs(self, data):
@@ -146,12 +149,18 @@ class ParseVideo(object):
         print("Uploaded Video intelligence data to cloud", video_frames_json+'/'+target_file)
 
     def upload_image(self, images):
+        urlDict ={}
         client = storage.Client()
         bucket = client.get_bucket(gcs_bucket)
         for image in images:
-            blob = bucket.blob(video_frames_folder + '/' + os.path.split(image)[-1])
+            image_name =  os.path.split(image)[-1]
+            blob = bucket.blob(video_frames_folder + '/' + image_name)
             blob.upload_from_filename(image)
+            blob.make_public()
+            public_url_data = blob.public_url
+            urlDict[image_name]= public_url_data
             print("uploading", image)
+        return urlDict
 
 
 if __name__ == "__main__":

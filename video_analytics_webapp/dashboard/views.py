@@ -30,7 +30,6 @@ class DashboardView(View):
             data = runner.main(query)
         # setattr(settings, 'ANALYTICS_DATA', data)
         # data = {'speech_analytics': []}
-        print(data)
 
         return JsonResponse(data)
 
