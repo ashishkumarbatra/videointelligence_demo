@@ -19,18 +19,18 @@ from .video_intellegence import ParseVideo
 from .video_search import VideoSearch
 from .video_to_text import VideoToText
 from .vision_analytics import VisionAnalytics
-from .config import video_name, local_video_folder, video_frames_folder, local_tmp_folder, clean_folders
+from .config import local_video_folder, video_frames_folder, local_tmp_folder, clean_folders
 
 
 class VideoIntelligenceRunner(object):
     def __init__(self):
         self.data = {}
 
-    def main(self, query=''):
+    def main(self, query='',video_name='',video_button='english'):
         # return fixture_data
 
         #clean_folders()
-        print("Starting Video Processing", datetime.datetime.now())
+        print("Starting Video Processing for video",video_name, datetime.datetime.now())
         video_parse = ParseVideo(video_name)
         process_video_data = video_parse.run()
         print("Finished Video Processing", datetime.datetime.now())
@@ -46,20 +46,27 @@ class VideoIntelligenceRunner(object):
             print("Statring vision analytics on ")
             self.data['vision_analytics'][image]= vision_data;
 
+        if(video_button=='english'):
+            video_encoding ="en-US"
+        else:
+            video_encoding="hi-IN"
+
         print("Starting Speech Analytics")
         video_abs_path = video_name
-        vtext = VideoToText(video_abs_path)
+        vtext = VideoToText(video_abs_path,video_encoding)
         vspeechdata = vtext.run()
         self.data['speech_analytics'] = vspeechdata
         print(self.data)
         print("Finished Speech Analytics")
 
-        print("Starting NLP analytics")
-        nlp_ana = NLPAnalytics()
-        nlp_data = nlp_ana.entities_text(vspeechdata['transcript'])
-        self.data['nlp_analytics'] = nlp_data
-        print(self.data['nlp_analytics'])
-        print("Finished NLP Analytics")
+        if(video_encoding == "en-US"):
+            print("Starting NLP analytics")
+            nlp_ana = NLPAnalytics()
+            nlp_data = nlp_ana.entities_text(vspeechdata['transcript'])
+            self.data['nlp_analytics'] = nlp_data
+            print(self.data['nlp_analytics'])
+            print("Finished NLP Analytics")
+
 
         words = self.data['speech_analytics']['words']
 

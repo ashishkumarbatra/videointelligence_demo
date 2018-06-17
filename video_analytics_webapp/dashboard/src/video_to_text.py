@@ -12,17 +12,18 @@ from google.cloud.speech import types
 # from fileutil import FileUtil
 #
 # from config import gcs_bucket, video_name, local_video_folder, video_encoding, local_tmp_folder, audio_folder, image_crops_frames
-from .config import gcs_bucket, video_name, local_video_folder, video_encoding, local_tmp_folder, audio_folder, image_crops_frames
+from .config import gcs_bucket, local_video_folder, local_tmp_folder, audio_folder, image_crops_frames
 # from .fileutil import FileUtil
 
 class VideoToText(object):
     """
     ffmpeg -i input-video.avi -vn -acodec copy output-audio.aac
     """
-    def __init__(self, video_url):
+    def __init__(self, video_url, video_encoding):
         self.video_url = video_url
         self.audio_file_name = None
         self.audio_tmp_dir = os.path.join(local_tmp_folder, audio_folder)
+        self.video_encoding = video_encoding
         self.duration = None
         self.get_file_size()
 
@@ -139,7 +140,7 @@ class VideoToText(object):
 
         config = types.RecognitionConfig(
             encoding=enums.RecognitionConfig.AudioEncoding.FLAC,
-            language_code=video_encoding,
+            language_code=self.video_encoding,
             enable_word_time_offsets=True)
         print("Start Extract text from audio")
 
@@ -199,6 +200,6 @@ class VideoToText(object):
 
 
 if __name__ == "__main__":
-    video_path = FileUtil.join(local_video_folder, video_name)
+    # video_path = FileUtil.join(local_video_folder, video_name)
     extractor = VideoToText('Here_how_Trump_North_Korea_summit_failed.mp4')
     extractor.run()

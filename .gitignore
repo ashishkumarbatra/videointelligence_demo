@@ -1,4 +1,7 @@
 venv/
+temp/
+tmp/
+data/
 .idea/
 keys/
 src/__pycache__/

@@ -10,10 +10,10 @@ from collections import defaultdict
 
 
 # from .fileutil import FileUtil
-from .config import video_name, local_video_folder
+from .config import  local_video_folder
 from .video_to_text import VideoToText
 
-video_full_path = os.path.join(local_video_folder, video_name)
+# video_full_path = os.path.join(local_video_folder, video_name)
 
 
 class VideoSearch(object):
@@ -55,7 +55,8 @@ class VideoSearch(object):
 
 if __name__ == '__main__':
     audio_file_name = 'mono_audio_India_does_not_believe_in_Me_First_approach_Sushma_Swaraj.mp4_2018-05-24_18:25:13.642331.flac'
-    search = VideoSearch(video_full_path, 'donald')
-    search.run(save_to_cloud=False, audio_file_name=audio_file_name)
+    # search = VideoSearch(video_full_path, 'donald')
+    # search.run(save_to_cloud=False, audio_file_name=audio_file_name)
+
 
 

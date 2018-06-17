@@ -8,13 +8,14 @@ gcs_bucket = 'videointelligence_demo'
 gcs_bucket_url ='https://storage.googleapis.com/videointelligence_demo'
 ffmpeg_duration_format = "%H:%M:%S.%f"
 
-video_name = 'Here_how_Trump_North_Korea_summit_failed.mp4'
+# video_name = 'Here_how_Trump_North_Korea_summit_failed.mp4'
+# video_name = 'short_kim_trump.mp4'
 # video_name = 'Narendra_Modi_Full_Speech_At_British_Parliament_In_U_K.mp4'
 # video_name = 'Narendra_Modi_on_demonetisation_of_Rs_500_and_Rs_1000_notes.mp4'
 # video_name = 'India_does_not_believe_in_Me_First_approach_Sushma_Swaraj.mp4'
 local_video_folder = 'data'
 local_tmp_folder = 'temp'
-video_encoding = 'en-US'  # 'hi-IN'
+# video_encoding = 'hi-IN' #'en-US'  # 'hi-IN'
 
 
 video_frames_json = 'video_frames_json'
